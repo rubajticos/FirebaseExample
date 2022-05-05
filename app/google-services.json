@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "712294403126",
+    "project_id": "fir-example-879d7",
+    "storage_bucket": "fir-example-879d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712294403126:android:ff477dd747b020697ddc97",
+        "android_client_info": {
+          "package_name": "pl.rubajticos.firebaseexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712294403126-7vlr7dq7kui3nklpsmv8ba6aisv7nnv7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf8ilAg5U3Pr_1Nww2h3kFQxVNFFlgPoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712294403126-7vlr7dq7kui3nklpsmv8ba6aisv7nnv7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
