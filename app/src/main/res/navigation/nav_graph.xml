@@ -9,5 +9,13 @@
         android:id="@+id/dashboardFragment"
         android:name="pl.rubajticos.firebaseexample.ui.dashboard.DashboardFragment"
         android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_dashboardFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="pl.rubajticos.firebaseexample.ui.dashboard.SignUpFragment"
+        android:label="SignUpFragment" />
 </navigation>

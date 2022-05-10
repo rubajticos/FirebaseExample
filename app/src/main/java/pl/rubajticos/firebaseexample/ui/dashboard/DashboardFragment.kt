@@ -1,9 +1,10 @@
 package pl.rubajticos.firebaseexample.ui.dashboard
 
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
-import pl.rubajticos.firebaseexample.ui.base.BaseFragment
 import pl.rubajticos.firebaseexample.databinding.FragmentDashboardBinding
+import pl.rubajticos.firebaseexample.ui.base.BaseFragment
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
@@ -12,6 +13,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
 ) {
 
     override fun setupView() {
+        binding.signUpBtn.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToSignUpFragment())
+        }
     }
 
     override fun observeEvents() {
