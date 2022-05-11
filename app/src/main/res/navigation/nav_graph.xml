@@ -16,6 +16,6 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="pl.rubajticos.firebaseexample.ui.dashboard.SignUpFragment"
+        android:name="pl.rubajticos.firebaseexample.ui.sign_up.SignUpFragment"
         android:label="SignUpFragment" />
 </navigation>
