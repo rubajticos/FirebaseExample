@@ -16,6 +16,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
         binding.signUpBtn.setOnClickListener {
             findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToSignUpFragment())
         }
+        binding.signInBtn.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToSignInFragment())
+        }
     }
 
     override fun observeEvents() {

@@ -1,4 +1,4 @@
-package pl.rubajticos.firebaseexample.ui.sign_up
+package pl.rubajticos.firebaseexample.ui.sign_in
 
 import android.content.Intent
 import android.content.IntentSender
@@ -9,43 +9,44 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
-import pl.rubajticos.firebaseexample.databinding.FragmentSignUpBinding
-import pl.rubajticos.firebaseexample.di.SignUpRequest
+import pl.rubajticos.firebaseexample.databinding.FragmentSignInBinding
+import pl.rubajticos.firebaseexample.di.SignInRequest
 import pl.rubajticos.firebaseexample.ui.base.BaseFragment
+import pl.rubajticos.firebaseexample.ui.sign_up.SignInViewModel
 import pl.rubajticos.firebaseexample.util.EventObserver
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
-    R.layout.fragment_sign_up,
-    FragmentSignUpBinding::inflate
+class SignInFragment : BaseFragment<FragmentSignInBinding>(
+    R.layout.fragment_sign_in,
+    FragmentSignInBinding::inflate
 ) {
     @Inject
     lateinit var googleSignInClient: SignInClient
 
     @Inject
-    @SignUpRequest
-    lateinit var googleSignUpRequest: BeginSignInRequest
+    @SignInRequest
+    lateinit var googleSignInRequest: BeginSignInRequest
 
     private val REQ_ONE_TAP = 2
-    private val viewModel: SignUpViewModel by viewModels()
+    private val viewModel: SignInViewModel by viewModels()
 
 
     override fun setupView() {
-        binding.signUp.setOnClickListener {
-            viewModel.signUpWithEmailAndPassword(
-                binding.emailEditText.text.toString(),
-                binding.passwordEditText.text.toString()
+        binding.signIn.setOnClickListener {
+            viewModel.signInWithEmailAndPassword(
+                binding.signInEmailEditText.text.toString(),
+                binding.signInPasswordEditText.text.toString()
             )
         }
 
-        binding.googleSignUpBtn.setOnClickListener {
-            startGoogleSignUp()
+        binding.googleSignInBtn.setOnClickListener {
+            startGoogleSignIn()
         }
     }
 
-    private fun startGoogleSignUp() {
-        googleSignInClient.beginSignIn(googleSignUpRequest)
+    private fun startGoogleSignIn() {
+        googleSignInClient.beginSignIn(googleSignInRequest)
             .addOnSuccessListener {
                 try {
                     startIntentSenderForResult(
@@ -62,8 +63,8 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
                 }
             }
             .addOnFailureListener {
-                Log.d("MRMR", "beginSignUp failure ${it.localizedMessage}")
-                startGoogleSignUp()
+                Log.d("MRMR", "beginSignIn failure ${it.localizedMessage}")
+                startGoogleSignIn()
             }
     }
 
@@ -71,9 +72,9 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
         viewModel.uiEvents.observe(viewLifecycleOwner, EventObserver {
             Log.d("MRMR", "$it")
             when (it) {
-                is SignUpEvent.Loading -> showToast(getString(R.string.loading))
-                is SignUpEvent.SignUpError -> showToast(it.text.asString(requireContext()))
-                is SignUpEvent.SignUpSuccess -> showToast(it.text.asString(requireContext()))
+                is SignInEvent.Loading -> showToast(getString(R.string.loading))
+                is SignInEvent.SignInError -> showToast(it.text.asString(requireContext()))
+                is SignInEvent.SignInSuccess -> showToast(it.text.asString(requireContext()))
             }
         })
     }
