@@ -25,5 +25,6 @@
     <string name="providers">Providers</string>
     <string name="sign_out_error">Problem z wylogowaniem - %1$s</string>
     <string name="sign_out_success">Wylogowano</string>
+    <string name="sign_up_chbx">Rejestracja</string>
 
 </resources>

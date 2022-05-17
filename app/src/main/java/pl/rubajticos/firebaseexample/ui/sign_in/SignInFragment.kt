@@ -2,6 +2,8 @@ package pl.rubajticos.firebaseexample.ui.sign_in
 
 import android.content.Intent
 import android.content.IntentSender
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.viewModels
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -12,7 +14,6 @@ import pl.rubajticos.firebaseexample.R
 import pl.rubajticos.firebaseexample.databinding.FragmentSignInBinding
 import pl.rubajticos.firebaseexample.di.SignInRequest
 import pl.rubajticos.firebaseexample.ui.base.BaseFragment
-import pl.rubajticos.firebaseexample.ui.sign_up.SignInViewModel
 import pl.rubajticos.firebaseexample.util.EventObserver
 import javax.inject.Inject
 
@@ -31,13 +32,19 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
     private val REQ_ONE_TAP = 2
     private val viewModel: SignInViewModel by viewModels()
 
-
     override fun setupView() {
+        binding.signInEmailEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                viewModel.onEvent(SignInFormEvent.EmailChanged(p0.toString()))
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+
         binding.signIn.setOnClickListener {
-            viewModel.signInWithEmailAndPassword(
-                binding.signInEmailEditText.text.toString(),
-                binding.signInPasswordEditText.text.toString()
-            )
+            viewModel.onEvent(SignInFormEvent.Submit)
         }
 
         binding.googleSignInBtn.setOnClickListener {
@@ -64,7 +71,6 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
             }
             .addOnFailureListener {
                 Log.d("MRMR", "beginSignIn failure ${it.localizedMessage}")
-                startGoogleSignIn()
             }
     }
 
