@@ -10,10 +10,10 @@
     <string name="sign_up_google">Zarejestruj się z Google</string>
     <string name="sign_in_google">Zaloguj się z Google</string>
     <string name="loading">Loading</string>
-    <string name="sign_up_success">Zarejestrowano poprawnie jako %1$s</string>
-    <string name="sign_in_success">Zalogowano poprawnie jako %1$s</string>
-    <string name="sign_up_error">Błąd podczas rejestracji</string>
-    <string name="sign_in_error">Błąd podczas logowania</string>
+    <string name="register_success">Zarejestrowano poprawnie jako %1$s</string>
+    <string name="login_success">Zalogowano poprawnie jako %1$s</string>
+    <string name="register_error">Błąd podczas rejestracji</string>
+    <string name="login_error">Błąd podczas logowania</string>
     <string name="email_wrong_format">Podaj poprawny e-mail</string>
     <string name="password_error">Hasło nie może być puste</string>
     <string name="home_title">Home</string>
@@ -25,5 +25,6 @@
     <string name="providers">Providers</string>
     <string name="sign_out_error">Problem z wylogowaniem - %1$s</string>
     <string name="sign_out_success">Wylogowano</string>
+    <string name="sign_up_chbx">Rejestracja</string>
 
 </resources>

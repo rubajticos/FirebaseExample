@@ -11,21 +11,14 @@
         android:label="fragment_dashboard"
         tools:layout="@layout/fragment_dashboard" >
         <action
-            android:id="@+id/action_dashboardFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
-        <action
-            android:id="@+id/action_dashboardFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
+            android:id="@+id/action_dashboardFragment_to_loginRegisterFragment"
+            app:destination="@id/loginRegisterFragment" />
     </fragment>
     <fragment
-        android:id="@+id/signUpFragment"
-        android:name="pl.rubajticos.firebaseexample.ui.sign_up.SignUpFragment"
-        android:label="SignUpFragment" />
-    <fragment
-        android:id="@+id/signInFragment"
-        android:name="pl.rubajticos.firebaseexample.ui.sign_in.SignInFragment"
-        android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" />
+        android:id="@+id/loginRegisterFragment"
+        android:name="pl.rubajticos.firebaseexample.ui.login_register.LoginRegisterFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login_register" />
     <fragment
         android:id="@+id/accountFragment"
         android:name="pl.rubajticos.firebaseexample.ui.account.AccountFragment"

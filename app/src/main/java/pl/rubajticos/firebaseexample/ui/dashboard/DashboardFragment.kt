@@ -13,11 +13,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
 ) {
 
     override fun setupView() {
-        binding.signUpBtn.setOnClickListener {
-            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToSignUpFragment())
-        }
-        binding.signInBtn.setOnClickListener {
-            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToSignInFragment())
+        binding.loginBtn.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToLoginRegisterFragment())
         }
     }
 
