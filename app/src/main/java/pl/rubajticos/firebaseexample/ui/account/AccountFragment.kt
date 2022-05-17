@@ -1,7 +1,7 @@
 package pl.rubajticos.firebaseexample.ui.account
 
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
@@ -20,6 +20,11 @@ class AccountFragment : BaseFragment<FragmentAccountBinding>(
 
     override fun setupView() {
         prepareRecyclerView()
+        binding.signOutBtn.setOnClickListener {
+            viewModel.signOut()
+        }
+
+
         viewModel.getAccountData()
     }
 
@@ -27,12 +32,16 @@ class AccountFragment : BaseFragment<FragmentAccountBinding>(
         viewModel.uiEvents.observe(viewLifecycleOwner, EventObserver {
             when (it) {
                 is AccountEvents.ShowAccountInfo -> {
-                    accountAdapter.update(it.infos.map { item ->
+                    accountAdapter.update(it.info.map { item ->
                         AccountInfoUiItem(
                             item.label.asString(requireContext()), item.value
                         )
                     })
-                    showToast(binding.userDetailsRV.height.toString())
+                }
+                is AccountEvents.SignOutError -> showToast(it.text.asString(requireContext()))
+                AccountEvents.SignOutSuccess -> {
+                    showToast(getString(R.string.sign_out_success))
+                    findNavController().navigate(AccountFragmentDirections.actionAccountFragmentToDashboardFragment())
                 }
             }
         })

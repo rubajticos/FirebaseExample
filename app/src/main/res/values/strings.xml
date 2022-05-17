@@ -22,6 +22,8 @@
     <string name="name_label">Nazwa</string>
     <string name="phone_label">Telefon</string>
     <string name="uid_label">UID</string>
-    <string name="provider_id">Provider ID</string>
+    <string name="providers">Providers</string>
+    <string name="sign_out_error">Problem z wylogowaniem - %1$s</string>
+    <string name="sign_out_success">Wylogowano</string>
 
 </resources>
