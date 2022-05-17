@@ -26,4 +26,8 @@
         android:name="pl.rubajticos.firebaseexample.ui.sign_in.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" />
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="pl.rubajticos.firebaseexample.ui.account.AccountFragment"
+        android:label="AccountFragment" />
 </navigation>
