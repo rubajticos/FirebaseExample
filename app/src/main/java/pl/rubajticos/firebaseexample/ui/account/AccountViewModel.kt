@@ -41,6 +41,9 @@ class AccountViewModel @Inject constructor(
             accountData.add(
                 AccountInfoItem(UiText.StringResource(R.string.uid_label), user.uid)
             )
+            accountData.add(
+                AccountInfoItem(UiText.StringResource(R.string.provider_id), user.providerId)
+            )
         }
 
         _uiEvents.value = Event(AccountEvents.ShowAccountInfo(accountData))

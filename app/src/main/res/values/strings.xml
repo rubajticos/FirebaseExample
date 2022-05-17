@@ -22,5 +22,6 @@
     <string name="name_label">Nazwa</string>
     <string name="phone_label">Telefon</string>
     <string name="uid_label">UID</string>
+    <string name="provider_id">Provider ID</string>
 
 </resources>

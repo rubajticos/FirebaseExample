@@ -1,6 +1,7 @@
 package pl.rubajticos.firebaseexample.ui.account
 
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
@@ -31,6 +32,7 @@ class AccountFragment : BaseFragment<FragmentAccountBinding>(
                             item.label.asString(requireContext()), item.value
                         )
                     })
+                    showToast(binding.userDetailsRV.height.toString())
                 }
             }
         })
