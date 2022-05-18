@@ -1,4 +1,4 @@
-package pl.rubajticos.firebaseexample.ui.sign_in
+package pl.rubajticos.firebaseexample.ui.sign_in_up
 
 import pl.rubajticos.firebaseexample.util.UiText
 

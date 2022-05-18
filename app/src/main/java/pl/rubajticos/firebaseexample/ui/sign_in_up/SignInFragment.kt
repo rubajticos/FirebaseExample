@@ -1,10 +1,16 @@
-package pl.rubajticos.firebaseexample.ui.sign_in
+package pl.rubajticos.firebaseexample.ui.sign_in_up
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.content.pm.PackageManager
+import android.os.ParcelFileDescriptor
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -16,7 +22,9 @@ import pl.rubajticos.firebaseexample.di.SignInRequest
 import pl.rubajticos.firebaseexample.di.SignUpRequest
 import pl.rubajticos.firebaseexample.ui.base.BaseFragment
 import pl.rubajticos.firebaseexample.util.EventObserver
+import java.io.FileOutputStream
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class SignInFragment : BaseFragment<FragmentSignInBinding>(
@@ -35,7 +43,38 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
     lateinit var googleSignUpRequest: BeginSignInRequest
 
     private val REQ_ONE_TAP = 2
+    private val CREATE_FILE = 1
     private val viewModel: SignInViewModel by viewModels()
+
+    private var readPermissionGranted = false
+    private var writePermissionGranted = false
+    private lateinit var permissionsLauncher: ActivityResultLauncher<Array<String>>
+
+    private fun updateOrRequestPermissions() {
+        val hasReadPermission = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+        val hasWritePermission = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        readPermissionGranted = hasReadPermission
+        writePermissionGranted = hasWritePermission
+
+        val permissionsToRequest = mutableListOf<String>()
+        if (!writePermissionGranted) {
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+        if (!readPermissionGranted) {
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        if (permissionsToRequest.isNotEmpty()) {
+            permissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        }
+
+    }
 
     override fun setupView() {
         binding.signInEmailEditText.addTextChangedListener(object : TextWatcher {
@@ -61,12 +100,47 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
         }
 
         binding.signIn.setOnClickListener {
-            viewModel.onEvent(SignInFormEvent.Submit)
+            writeStorageAccessFrameworkFile(requireContext())
+//            updateOrRequestPermissions()
+
+//            viewModel.onEvent(SignInFormEvent.Submit)
+//            val file = File(
+//                Environment.getExternalStorageDirectory(),
+//                "MRTest.txt"
+//            )
+//            val imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+//
+//            val contentValue = ContentValues().apply {
+//                put(MediaStore.Images.Media.DISPLAY_NAME, "test.jpg")
+//                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+//            }
+//
+//            try {
+//                requireActivity().contentResolver.insert(imageCollection, contentValue)
+//            } catch (e: IOException) {
+//                Log.d("MRMR", e.localizedMessage ?: "Error")
+//            }
+//
+//            val file = Environment.getExternalStorageDirectory()
+////            file.mkdirs()
+//            if (file.exists()) {
+//                Log.d("MRMR", file.absolutePath)
+//            } else {
+//                Log.d("MRMR", "File not exists")
+//            }
         }
 
         binding.googleSignInBtn.setOnClickListener {
             viewModel.onGoogleButtonClick()
         }
+    }
+
+    private fun writeStorageAccessFrameworkFile(context: Context) {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TITLE, "MRMR")
+        startActivityForResult(intent, CREATE_FILE)
     }
 
     private fun beginSignInWithGoogle(request: BeginSignInRequest) {
@@ -134,6 +208,28 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
                     Log.d("MRMR", "result ${e.localizedMessage}")
                 }
             }
+            CREATE_FILE -> {
+                Log.d("MRMR", "File created")
+                try {
+                    data?.data?.let {
+                        val pfd: ParcelFileDescriptor? =
+                            requireActivity().contentResolver.openFileDescriptor(it, "w")
+                        val fileOutputStream = FileOutputStream(pfd?.fileDescriptor)
+                        fileOutputStream.write(
+                            """Overwritten at ${System.currentTimeMillis()}
+    """.toByteArray()
+                        )
+                        fileOutputStream.close()
+                        pfd?.close()
+                        fileOutputStream.close()
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.d("MRMR", "Document not written")
+                }
+            }
+
         }
     }
 }

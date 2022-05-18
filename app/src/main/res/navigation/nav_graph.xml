@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
-        android:name="pl.rubajticos.firebaseexample.ui.sign_in.SignInFragment"
+        android:name="pl.rubajticos.firebaseexample.ui.sign_in_up.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" />
     <fragment

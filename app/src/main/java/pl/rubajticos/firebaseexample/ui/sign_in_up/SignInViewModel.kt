@@ -1,4 +1,4 @@
-package pl.rubajticos.firebaseexample.ui.sign_in
+package pl.rubajticos.firebaseexample.ui.sign_in_up
 
 import android.util.Log
 import androidx.lifecycle.LiveData
