@@ -1,10 +1,12 @@
 package pl.rubajticos.firebaseexample.ui.dashboard
 
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
 import pl.rubajticos.firebaseexample.databinding.FragmentDashboardBinding
 import pl.rubajticos.firebaseexample.ui.base.BaseFragment
+import pl.rubajticos.firebaseexample.util.EventObserver
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
@@ -12,12 +14,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
     FragmentDashboardBinding::inflate
 ) {
 
+    private val viewModel: DashboardViewModel by viewModels()
+
     override fun setupView() {
-        binding.loginBtn.setOnClickListener {
-            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToLoginRegisterFragment())
-        }
+        viewModel.checkUserLogin()
     }
 
     override fun observeEvents() {
+        viewModel.uiEvents.observe(viewLifecycleOwner, EventObserver { event ->
+            when (event) {
+                DashboardEvent.NavigateToLogin -> {
+                    findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToLoginRegisterFragment())
+                }
+            }
+        })
     }
 }
