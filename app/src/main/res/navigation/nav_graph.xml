@@ -11,16 +11,9 @@
         android:label="fragment_dashboard"
         tools:layout="@layout/fragment_dashboard" >
         <action
-            android:id="@+id/action_dashboardFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
-        <action
             android:id="@+id/action_dashboardFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/signUpFragment"
-        android:name="pl.rubajticos.firebaseexample.ui.sign_up.SignUpFragment"
-        android:label="SignUpFragment" />
     <fragment
         android:id="@+id/signInFragment"
         android:name="pl.rubajticos.firebaseexample.ui.sign_in.SignInFragment"

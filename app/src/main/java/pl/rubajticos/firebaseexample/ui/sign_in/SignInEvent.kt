@@ -3,10 +3,12 @@ package pl.rubajticos.firebaseexample.ui.sign_in
 import pl.rubajticos.firebaseexample.util.UiText
 
 sealed class SignInEvent {
-    data class SignInSuccess(val text: UiText) : SignInEvent()
-    data class SignInError(val text: UiText) : SignInEvent()
+    data class Success(val text: UiText) : SignInEvent()
+    data class Error(val text: UiText) : SignInEvent()
     object Loading : SignInEvent()
-    data class State(val state: SignInFormState): SignInEvent()
+    data class State(val state: SignInFormState) : SignInEvent()
+    object SignInWithGoogle : SignInEvent()
+    object SignUpWithGoogle : SignInEvent()
 }
 
 sealed class SignInFormEvent {

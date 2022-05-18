@@ -11,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import pl.rubajticos.firebaseexample.R
 import pl.rubajticos.firebaseexample.model.ValidateResult
-import pl.rubajticos.firebaseexample.ui.sign_up.SignUpEvent
 import pl.rubajticos.firebaseexample.util.Event
 import pl.rubajticos.firebaseexample.util.UiText
 import javax.inject.Inject
@@ -40,14 +39,14 @@ class SignInViewModel @Inject constructor(
             }
             SignInFormEvent.Submit -> {
                 if (state.registerMode) {
-                    // TODO: SignUp
+                    signUpWithEmailAndPassword()
                 } else {
                     signInWithEmailAndPassword()
                 }
             }
             is SignInFormEvent.SubmitWithGoogle -> {
                 if (state.registerMode) {
-                    // TODO: SignUp
+                    signUpWithGoogle(event.idToken)
                 } else {
                     signInWithGoogle(event.idToken)
                 }
@@ -78,7 +77,7 @@ class SignInViewModel @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _uiEvents.value = Event(
-                        SignInEvent.SignInSuccess(
+                        SignInEvent.Success(
                             UiText.StringResource(
                                 R.string.sign_in_success,
                                 getCurrentUserEmail()
@@ -89,7 +88,7 @@ class SignInViewModel @Inject constructor(
                     Log.d("MRMR", task.exception?.localizedMessage ?: "Unknown error")
                     _uiEvents.value =
                         Event(
-                            SignInEvent.SignInError(
+                            SignInEvent.Error(
                                 UiText.DynamicString(
                                     task.exception?.localizedMessage ?: "Unknown error"
                                 )
@@ -99,13 +98,62 @@ class SignInViewModel @Inject constructor(
             }
             .addOnFailureListener {
                 _uiEvents.value = Event(
-                    SignInEvent.SignInError(
+                    SignInEvent.Error(
                         UiText.DynamicString(
                             it.localizedMessage ?: "SignIn error"
                         )
                     )
                 )
                 Log.d("MRMR", "signInWithEmailAndPassword failure -> ${it.localizedMessage}")
+            }
+    }
+
+    private fun signUpWithEmailAndPassword() = viewModelScope.launch {
+        _uiEvents.value = Event(SignInEvent.Loading)
+        val emailValidation = validateEmail(state.email)
+        val passwordValidation = validatePassword(state.password)
+
+        val hasError = listOf(emailValidation, passwordValidation).any { !it.isSuccessful }
+        if (hasError) {
+            state = state.copy(
+                emailError = emailValidation.error,
+                passwordError = passwordValidation.error
+            )
+            emitState()
+            return@launch
+        }
+
+        firebaseAuth.createUserWithEmailAndPassword(state.email, state.password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _uiEvents.value = Event(
+                        SignInEvent.Success(
+                            UiText.StringResource(
+                                R.string.sign_up_success,
+                                getCurrentUserEmail()
+                            )
+                        )
+                    )
+                } else {
+                    _uiEvents.value =
+                        Event(
+                            SignInEvent.Error(
+                                UiText.DynamicString(
+                                    task.exception?.localizedMessage ?: "Unknown error"
+                                )
+                            )
+                        )
+                }
+            }
+            .addOnFailureListener {
+                _uiEvents.value = Event(
+                    SignInEvent.Error(
+                        UiText.DynamicString(
+                            it.localizedMessage ?: "SignUp error"
+                        )
+                    )
+                )
+                Log.d("MRMR", "signUpWithEmailAndPassword failure -> ${it.localizedMessage}")
             }
     }
 
@@ -131,7 +179,7 @@ class SignInViewModel @Inject constructor(
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     _uiEvents.value = Event(
-                        SignInEvent.SignInSuccess(
+                        SignInEvent.Success(
                             UiText.StringResource(
                                 R.string.sign_in_success,
                                 getCurrentUserEmail()
@@ -139,14 +187,14 @@ class SignInViewModel @Inject constructor(
                         )
                     )
                 } else {
-                    SignUpEvent.SignUpError(
+                    SignInEvent.Error(
                         UiText.StringResource(R.string.sign_in_error)
                     )
                 }
             }
             .addOnFailureListener {
                 _uiEvents.value = Event(
-                    SignInEvent.SignInError(
+                    SignInEvent.Error(
                         UiText.DynamicString(
                             it.localizedMessage ?: "SignIn error"
                         )
@@ -156,6 +204,46 @@ class SignInViewModel @Inject constructor(
             }
     }
 
+    private fun signUpWithGoogle(idToken: String) = viewModelScope.launch {
+        _uiEvents.value = Event(SignInEvent.Loading)
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        firebaseAuth.signInWithCredential(credential)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    _uiEvents.value = Event(
+                        SignInEvent.Success(
+                            UiText.StringResource(
+                                R.string.sign_up_success,
+                                getCurrentUserEmail()
+                            )
+                        )
+                    )
+                } else {
+                    SignInEvent.Error(
+                        UiText.StringResource(R.string.sign_up_error)
+                    )
+                }
+            }
+            .addOnFailureListener {
+                _uiEvents.value = Event(
+                    SignInEvent.Error(
+                        UiText.DynamicString(
+                            it.localizedMessage ?: "SignUp error"
+                        )
+                    )
+                )
+                Log.d("MRMR", "signUp with Google failure -> ${it.localizedMessage}")
+            }
+    }
+
     private fun getCurrentUserEmail() = firebaseAuth.currentUser?.email ?: "UNKNOWN"
+
+    fun onGoogleButtonClick() = viewModelScope.launch {
+        if (state.registerMode) {
+            _uiEvents.value = Event(SignInEvent.SignUpWithGoogle)
+        } else {
+            _uiEvents.value = Event(SignInEvent.SignInWithGoogle)
+        }
+    }
 
 }

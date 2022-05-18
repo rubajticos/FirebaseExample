@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import pl.rubajticos.firebaseexample.R
 import pl.rubajticos.firebaseexample.databinding.FragmentSignInBinding
 import pl.rubajticos.firebaseexample.di.SignInRequest
+import pl.rubajticos.firebaseexample.di.SignUpRequest
 import pl.rubajticos.firebaseexample.ui.base.BaseFragment
 import pl.rubajticos.firebaseexample.util.EventObserver
 import javax.inject.Inject
@@ -28,6 +29,10 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
     @Inject
     @SignInRequest
     lateinit var googleSignInRequest: BeginSignInRequest
+
+    @Inject
+    @SignUpRequest
+    lateinit var googleSignUpRequest: BeginSignInRequest
 
     private val REQ_ONE_TAP = 2
     private val viewModel: SignInViewModel by viewModels()
@@ -60,12 +65,12 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
         }
 
         binding.googleSignInBtn.setOnClickListener {
-            startGoogleSignIn()
+            viewModel.onGoogleButtonClick()
         }
     }
 
-    private fun startGoogleSignIn() {
-        googleSignInClient.beginSignIn(googleSignInRequest)
+    private fun beginSignInWithGoogle(request: BeginSignInRequest) {
+        googleSignInClient.beginSignIn(request)
             .addOnSuccessListener {
                 try {
                     startIntentSenderForResult(
@@ -90,8 +95,8 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
         viewModel.uiEvents.observe(viewLifecycleOwner, EventObserver {
             when (it) {
                 is SignInEvent.Loading -> showToast(getString(R.string.loading))
-                is SignInEvent.SignInError -> showToast(it.text.asString(requireContext()))
-                is SignInEvent.SignInSuccess -> showToast(it.text.asString(requireContext()))
+                is SignInEvent.Error -> showToast(it.text.asString(requireContext()))
+                is SignInEvent.Success -> showToast(it.text.asString(requireContext()))
                 is SignInEvent.State -> {
                     binding.signInEmailTextInput.error =
                         it.state.emailError?.asString(requireContext())
@@ -106,6 +111,8 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
                         binding.googleSignInBtn.text = getString(R.string.sign_in_google)
                     }
                 }
+                SignInEvent.SignInWithGoogle -> beginSignInWithGoogle(googleSignInRequest)
+                SignInEvent.SignUpWithGoogle -> beginSignInWithGoogle(googleSignUpRequest)
             }
         })
     }
