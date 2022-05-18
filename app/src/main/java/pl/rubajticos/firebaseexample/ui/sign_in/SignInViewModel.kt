@@ -10,6 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import pl.rubajticos.firebaseexample.R
+import pl.rubajticos.firebaseexample.model.ValidateResult
 import pl.rubajticos.firebaseexample.ui.sign_up.SignUpEvent
 import pl.rubajticos.firebaseexample.util.Event
 import pl.rubajticos.firebaseexample.util.UiText
@@ -23,16 +24,19 @@ class SignInViewModel @Inject constructor(
     val uiEvents: LiveData<Event<SignInEvent>> = _uiEvents
     var state = SignInFormState()
 
-    fun onEvent(event: SignInFormEvent) {
+    fun onEvent(event: SignInFormEvent) = viewModelScope.launch {
         when (event) {
             is SignInFormEvent.EmailChanged -> {
                 state = state.copy(email = event.email)
+                emitState()
             }
             is SignInFormEvent.ModeChanged -> {
                 state = state.copy(registerMode = event.mode)
+                emitState()
             }
             is SignInFormEvent.PasswordChanged -> {
                 state = state.copy(password = event.password)
+                emitState()
             }
             SignInFormEvent.Submit -> {
                 if (state.registerMode) {
@@ -51,17 +55,22 @@ class SignInViewModel @Inject constructor(
         }
     }
 
+    private fun emitState() {
+        _uiEvents.value = Event(SignInEvent.State(state))
+    }
+
     private fun signInWithEmailAndPassword() = viewModelScope.launch {
         _uiEvents.value = Event(SignInEvent.Loading)
-        if (state.email.isBlank()) {
-            _uiEvents.value =
-                Event(SignInEvent.SignInError(UiText.StringResource(R.string.email_wrong_format)))
-            return@launch
-        }
+        val emailValidation = validateEmail(state.email)
+        val passwordValidation = validatePassword(state.password)
 
-        if (state.password.isBlank()) {
-            _uiEvents.value =
-                Event(SignInEvent.SignInError(UiText.StringResource(R.string.password_error)))
+        val hasError = listOf(emailValidation, passwordValidation).any { !it.isSuccessful }
+        if (hasError) {
+            state = state.copy(
+                emailError = emailValidation.error,
+                passwordError = passwordValidation.error
+            )
+            emitState()
             return@launch
         }
 
@@ -99,6 +108,21 @@ class SignInViewModel @Inject constructor(
                 Log.d("MRMR", "signInWithEmailAndPassword failure -> ${it.localizedMessage}")
             }
     }
+
+    private fun validateEmail(email: String): ValidateResult {
+        if (email.isBlank()) {
+            return ValidateResult(false, UiText.StringResource(R.string.email_wrong_format))
+        }
+        return ValidateResult(isSuccessful = true)
+    }
+
+    private fun validatePassword(password: String): ValidateResult {
+        if (password.isBlank()) {
+            return ValidateResult(false, UiText.StringResource(R.string.password_error))
+        }
+        return ValidateResult(isSuccessful = true)
+    }
+
 
     private fun signInWithGoogle(idToken: String) = viewModelScope.launch {
         _uiEvents.value = Event(SignInEvent.Loading)

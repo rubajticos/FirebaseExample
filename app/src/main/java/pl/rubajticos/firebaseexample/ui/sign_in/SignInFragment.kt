@@ -42,6 +42,18 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
 
             override fun afterTextChanged(p0: Editable?) {}
         })
+        binding.signInPasswordEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                viewModel.onEvent(SignInFormEvent.PasswordChanged(p0.toString()))
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+        binding.mode.setOnCheckedChangeListener { _, checked ->
+            viewModel.onEvent(SignInFormEvent.ModeChanged(checked))
+        }
 
         binding.signIn.setOnClickListener {
             viewModel.onEvent(SignInFormEvent.Submit)
@@ -76,11 +88,24 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
 
     override fun observeEvents() {
         viewModel.uiEvents.observe(viewLifecycleOwner, EventObserver {
-            Log.d("MRMR", "$it")
             when (it) {
                 is SignInEvent.Loading -> showToast(getString(R.string.loading))
                 is SignInEvent.SignInError -> showToast(it.text.asString(requireContext()))
                 is SignInEvent.SignInSuccess -> showToast(it.text.asString(requireContext()))
+                is SignInEvent.State -> {
+                    binding.signInEmailTextInput.error =
+                        it.state.emailError?.asString(requireContext())
+                    binding.signInPasswordTextInput.error =
+                        it.state.passwordError?.asString(requireContext())
+                    binding.mode.isChecked = it.state.registerMode
+                    if (it.state.registerMode) {
+                        binding.signIn.text = getString(R.string.sign_up)
+                        binding.googleSignInBtn.text = getString(R.string.sign_up_google)
+                    } else {
+                        binding.signIn.text = getString(R.string.sign_in)
+                        binding.googleSignInBtn.text = getString(R.string.sign_in_google)
+                    }
+                }
             }
         })
     }
@@ -94,7 +119,7 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
                     val idToken = credential.googleIdToken
                     Log.d("MRMR", "token=$idToken")
                     if (idToken != null) {
-                        viewModel.signUpWithGoogle(idToken)
+                        viewModel.onEvent(SignInFormEvent.SubmitWithGoogle(idToken))
                     } else {
                         Log.d("MRMR", " Google ID Token is null")
                     }

@@ -6,6 +6,7 @@ sealed class SignInEvent {
     data class SignInSuccess(val text: UiText) : SignInEvent()
     data class SignInError(val text: UiText) : SignInEvent()
     object Loading : SignInEvent()
+    data class State(val state: SignInFormState): SignInEvent()
 }
 
 sealed class SignInFormEvent {

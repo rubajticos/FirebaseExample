@@ -1,9 +1,11 @@
 package pl.rubajticos.firebaseexample.ui.sign_in
 
+import pl.rubajticos.firebaseexample.util.UiText
+
 data class SignInFormState(
     val email: String = "",
-    val emailError: String? = null,
+    val emailError: UiText? = null,
     val password: String = "",
-    val passwordError: String? = null,
+    val passwordError: UiText? = null,
     val registerMode: Boolean = false
 )
