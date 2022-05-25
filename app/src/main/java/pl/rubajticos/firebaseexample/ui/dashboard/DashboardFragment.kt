@@ -18,6 +18,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
 
     override fun setupView() {
         viewModel.checkUserLogin()
+
+        binding.realtimeDatabaseButton.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToNewsFragment())
+        }
+
     }
 
     override fun observeEvents() {

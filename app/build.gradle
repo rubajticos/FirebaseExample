@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
 
     //Navigation
     def nav_version = "2.4.2"
